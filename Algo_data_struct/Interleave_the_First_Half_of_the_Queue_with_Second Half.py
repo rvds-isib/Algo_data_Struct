@@ -1,43 +1,44 @@
-from collections import deque
+from queue import SimpleQueue
 
 
 class Solution:
-    """
-        Vous recevez une file d'attente Q de N entiers de longueur paire, réorganisez les éléments en entrelaçant
-        la première moitié de la file d'attente avec la seconde moitié de la file d'attente.
-        Expected Time Complexity: O(N) → car elle parcourt chaque élément de la file une seule fois.
-        Expected Auxiliary Space: O(N) → car elle utilise une nouvelle liste pour stocker les éléments réarrangés.
-    """
-
     def rearrangeQueue(self, n, q):
-        """
-        Sépare la 'queue' en deux moitiés égales et insère un élément sur deux dans la nouvelle queue
-        :param n: Taille de la queue
-        :param q: Queue
-        :return: la queue réarrangée
-        """
-        interleaved_queue = deque()
-        mid = n // 2
+        interleaved_queue = SimpleQueue()
 
-        # Crée deux queues pour les deux moitiés
-        first_half = deque(q[:mid])
-        second_half = deque(q[mid:])
+        # Créer deux files pour les deux moitiés
+        first_half = SimpleQueue()
+        second_half = SimpleQueue()
+
+        # Remplir les deux moitiés de la file d'attente
+        for _ in range(n // 2):
+            second_half.put(q.pop())
+        for _ in range(n // 2):
+            first_half.put(q.pop())
 
         # Intercaler les éléments des deux moitiés
-        while first_half and second_half:
-            interleaved_queue.append(first_half.popleft())
-            interleaved_queue.append(second_half.popleft())
+        while not first_half.empty() and not second_half.empty():
+            interleaved_queue.put(second_half.get())
+            interleaved_queue.put(first_half.get())
 
-        # Retourne la nouvelle 'queue (liste)' réarrangée
-        return list(interleaved_queue)
+        return interleaved_queue
 
 
+# Exemple d'utilisation
 N = 4
 Q = [2, 4, 3, 1]
-print("Before :", Q)
+print("Before:", Q)
 solution = Solution()
-Q = solution.rearrangeQueue(N, Q)
-print("After :", Q)
+result = solution.rearrangeQueue(N, Q)
+
+# Stocker les éléments de la file d'attente dans une liste
+reversed_queue = []
+while not result.empty():
+    reversed_queue.append(result.get())
+
+# Imprimer les éléments de la liste dans le sens inverse
+print("After rearrangement (reversed):", end=" ")
+for i in range(len(reversed_queue) - 1, -1, -1):
+    print(reversed_queue[i], end=" ")
 
 """
 Output:
